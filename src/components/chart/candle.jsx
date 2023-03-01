@@ -98,7 +98,7 @@ const Candle = ({ width, height, count, dataLength, name, candleData }) => {
                 y2={y}
               ></line>
               <text x={chartWidth - 60} y={y + 10} fontSize="12">
-                {yValue.toLocaleString()} $
+                {yValue.toLocaleString()}
               </text>
             </g>
           );
