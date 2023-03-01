@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Candle from "./components/chart/candle";
 import Volume from "./components/chart/volume";
+import { collectData } from "./utils/collectData";
 
 function App() {
   const year = new Date().getFullYear();
@@ -15,7 +16,8 @@ function App() {
   const [count, setCount] = useState(1000);
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState(today);
-  const [chartData, setChartData] = useState([]);
+  const [candleData, setCandleData] = useState([]);
+  const [volumeData, setVolumeData] = useState([]);
   const [dataLength, setDataLength] = useState();
   // const { width, height } = size;
 
@@ -24,7 +26,9 @@ function App() {
     window.onwheel = (e) => {
       e.deltaY > 0
         ? setDataLength(dataLength < 18 ? dataLength : dataLength - 8)
-        : setDataLength(dataLength > count ? dataLength : dataLength + 8);
+        : setDataLength(
+            dataLength > candleData.length - 18 ? dataLength : dataLength + 8
+          );
     };
   };
 
@@ -46,29 +50,33 @@ function App() {
     )
       .then((res) => res.json())
       .then((res) => {
-        setChartData(res.payload);
-        setDataLength(res.payload.length);
+        setCandleData(res.payload.reverse());
+        setVolumeData(res.payload.map((v, i) => v.volume));
+        setDataLength(res.payload.length - 50);
       })
       .then(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
-    if (chartData) console.log(chartData);
-  }, [chartData]);
-
+    if (candleData) {
+      // console.log(candleData);
+      // console.log(volumeData);
+    }
+  }, [candleData]);
+  // console.log(dataLength, candleData.length);
   return (
     <>
       {isLoading ? (
         <>Loading</>
       ) : (
-        <Container>
+        <Container onWheel={dataWheelHandler}>
           <Candle
             width={size.width}
             height={size.height}
             count={count}
             dataLength={dataLength}
             name={name}
-            chartData={chartData}
+            candleData={candleData}
           />
           <Volume
             width={size.width}
@@ -76,7 +84,7 @@ function App() {
             count={count}
             dataLength={dataLength}
             name={name}
-            chartData={chartData}
+            volumeData={volumeData}
           />
         </Container>
       )}
@@ -87,5 +95,8 @@ function App() {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  /* background-color: #000211; */
+  color: white;
 `;
+
 export default App;

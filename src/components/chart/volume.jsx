@@ -1,4 +1,4 @@
-const Volume = ({ width, height, count, dataLength, name, chartData }) => {
+const Volume = ({ width, height, count, dataLength, name, volumeData }) => {
   return <>volume</>;
 };
 
